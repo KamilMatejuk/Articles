@@ -14,7 +14,7 @@ Feel free to connect, ask questions, or share your experiences. Together, let's 
 Most of my articles will be written in series, shown below.
 
 * [Exploring Algorithms](./Exploring%20Algorithms)
-  * [A* pathfinding for Puzzle15](./Exploring%20Algorithms/01.%20A*%20pathfinding%20for%20Puzzle15)
+  * [01. Heuristic analysis of A* pathfinding for Puzzle15](./Exploring%20Algorithms/01.%20Heuristic%20analysis%20of%20A*%20pathfinding%20for%20Puzzle15/)
 * [Bash Magic](./Bash%20Magic)
   * work in progress ...
 * [Web Graphics Basics](./Web%20Graphics%20Basics)
