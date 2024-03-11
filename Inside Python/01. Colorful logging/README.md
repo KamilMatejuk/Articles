@@ -1,4 +1,4 @@
-[Link to article]()
+[Link to article](https://medium.com/@kamilmatejuk/inside-python-colorful-logging-ad3a74442cc6)
 
 You can define all your loggers in one module, and then import the one you need.
 ```python
