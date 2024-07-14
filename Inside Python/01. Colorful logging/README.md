@@ -20,4 +20,3 @@ Enjoy your colorful logs :)
 
 ### Links:
   * [ANSI coloring codes](https://gist.github.com/KamilMatejuk/3438a50b27cdbaa10b62cc0ed7f68450)
-  * 
