@@ -7,6 +7,7 @@ import pandas as pd
 
 
 DOWNLOAD_PATH = '/home/kamil/Downloads'
+FIRST_CONNECTIONS = 'Downloaded_1st_connections.csv'
 
 
 def extract_connections_of(person: str):
@@ -66,7 +67,7 @@ def extract_connections_of(person: str):
 
 
 if __name__ == '__main__':
-    my_connections = pd.read_csv('Downloaded_1st_connections.csv', skiprows=3)
+    my_connections = pd.read_csv(FIRST_CONNECTIONS, skiprows=3)
     names = sorted(set((my_connections['First Name'] + ' ' + my_connections['Last Name']).dropna()))
     for i, n in enumerate(names):
         if i < 23: continue
