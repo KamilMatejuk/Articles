@@ -1,3 +1,6 @@
 pyautogui
 pynput
 beautifulsoup4
+networkx
+matplotlib
+scipy

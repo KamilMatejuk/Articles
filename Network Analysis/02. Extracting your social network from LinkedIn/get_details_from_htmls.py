@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 
 def get_from_htmls(person: str):
-    names = []
+    names = set()
     for filename in sorted(glob.glob(f'results/{person}/*.html')):
         with open(filename) as f:
             soup = BeautifulSoup(f.read(), 'html.parser')
@@ -12,13 +12,9 @@ def get_from_htmls(person: str):
         for li in items:
             name = li.select_one('.entity-result__title-text > a > span > span')
             if name is None: continue
-            name = ''.join(name.contents).strip()
-            print(name)
-            names.append(name)
+            name = ''.join(name.get_text(strip=True)).strip()
+            names.add(name)
+    if len(names) == 0: return
     with open(f'results/{person}.json', 'w+') as f:
-        json.dump(names, f, ensure_ascii=False)
-    
-    
-if __name__ == '__main__':
-    get_from_htmls('Michał Kawa')
+        json.dump(list(names), f, ensure_ascii=False)
 

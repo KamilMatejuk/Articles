@@ -1,5 +1,6 @@
 import coordinates
 from tools import run_instructions, remove_polish_chars
+from get_details_from_htmls import get_from_htmls
 
 import os
 import time
@@ -70,5 +71,6 @@ if __name__ == '__main__':
     my_connections = pd.read_csv(FIRST_CONNECTIONS, skiprows=3)
     names = sorted(set((my_connections['First Name'] + ' ' + my_connections['Last Name']).dropna()))
     for i, n in enumerate(names):
-        if i < 23: continue
+        if os.path.exists(f'results/{n}.json'): continue
         extract_connections_of(n)
+        get_from_htmls(n)
