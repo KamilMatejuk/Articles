@@ -49,4 +49,5 @@ def run_instructions(instructions: list[str]):
         elif m := re.match('shortcut_(.+)_(.+)', inst):
             # print('shortcut', m.group(1), m.group(2))
             shortcut(m.group(1), m.group(2))
+        else: print(f'!!! Unknown instruction {inst} !!!')
         time.sleep(0.5 + random.random())
