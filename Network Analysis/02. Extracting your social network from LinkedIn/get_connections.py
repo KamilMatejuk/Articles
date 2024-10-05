@@ -38,8 +38,9 @@ def extract_connections_of(person: str):
     while True:
         print(f'{person} PAGE {page}'.upper())
         filename = remove_polish_chars(f'{person}_{page}'.lower().replace(' ', '_'))
+        path = f'{DOWNLOAD_PATH}/{filename}.html'
         # save page with correct name
-        if not os.path.exists(f'{DOWNLOAD_PATH}/{filename}.html'):
+        if not os.path.exists(path):
             time.sleep(5)
             run_instructions([
                 'shortcut_{}_{}'.format('ctrl', 's'),
@@ -47,12 +48,15 @@ def extract_connections_of(person: str):
                 'type_{}'.format(filename),
                 'press_{}'.format('enter'),
             ])
-            time.sleep(3)
+            for _ in range(20):
+                time.sleep(1)
+                if os.path.exists(path):
+                    break
         else:
             print('skip download')
             time.sleep(1)
         # check if its correct page
-        with open(f'{DOWNLOAD_PATH}/{filename}.html') as f:
+        with open(path) as f:
             html_content = f.read()
         if 'No results found' in html_content or \
         'This one’s our fault' in html_content:
@@ -71,8 +75,8 @@ def extract_connections_of(person: str):
             run_instructions(['shortcut_ctrl_v', 'press_enter'])
             time.sleep(3)
     # repackage folder
-    os.system(f'mkdir -p "results/{person}" && mv {DOWNLOAD_PATH}/* "results/{person}"')
-            
+    person_filename = remove_polish_chars(person.lower().replace(' ', '_'))
+    os.system(f'mkdir -p "results/{person}" && mv {DOWNLOAD_PATH}/{person_filename}* "results/{person}"')
 
 
 if __name__ == '__main__':
