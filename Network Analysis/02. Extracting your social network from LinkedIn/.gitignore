@@ -2,4 +2,8 @@
 __pycache__/
 results/
 coordinates.py
+
+# private
 Downloaded_1st_connections.csv
+network_edges.csv
+mapping.csv
