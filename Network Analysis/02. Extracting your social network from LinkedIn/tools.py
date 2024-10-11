@@ -21,7 +21,7 @@ def type_polish_text(text: str, interval: float):
         'ż': ('altgr', 'z'),
         'ź': ('altgr', 'x')
     }
-    for char in text:
+    for char in text.lower():
         if char in special_chars:
             shortcut(*special_chars[char])
         else: pyautogui.press(char)
@@ -49,4 +49,5 @@ def run_instructions(instructions: list[str]):
         elif m := re.match('shortcut_(.+)_(.+)', inst):
             # print('shortcut', m.group(1), m.group(2))
             shortcut(m.group(1), m.group(2))
+        else: print(f'!!! Unknown instruction {inst} !!!')
         time.sleep(0.5 + random.random())
