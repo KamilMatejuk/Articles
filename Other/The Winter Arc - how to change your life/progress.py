@@ -28,7 +28,7 @@ def draw_rounded_rectangle(draw, xy, radius, fill=None, outline=None, width=1):
     return draw
 
 
-image = Image.open('winter_arc_progress.png') # 1914 x 690
+image = Image.open('progress.png') # 1914 x 690
 x, y = image.size
 draw = ImageDraw.Draw(image)
 
@@ -45,7 +45,7 @@ draw = draw_rounded_rectangle(draw, radius=outer_size/2-padding, fill='white', w
         xy=[margin_left+padding+2, y-margin_bottom-outer_size+padding, margin_left+padding+2+size, y-margin_bottom-padding])
 
 # runner
-runner = Image.open('winter_arc_runner.png')
+runner = Image.open('runner.png')
 runner = runner.resize((runner.size[0] // 2, runner.size[1] // 2))
 image.paste(runner, (margin_left+padding+2+size-runner.size[0]//2, y-margin_bottom-outer_size-runner.size[1]-5), runner)
 
@@ -56,4 +56,4 @@ text_width = draw.textsize(text, font=font)[0]
 draw.text(((x - text_width) // 2, 50), text, fill=(255, 255, 255, 255), font=font)
 
 # save
-image.save('winter_arc_progress_daily.png', format="PNG")
+image.save('progress_daily.png', format="PNG")
