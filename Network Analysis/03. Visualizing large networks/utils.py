@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import time
 import tqdm
+import sys
 import os
 
 
@@ -13,8 +14,9 @@ ORANGE = '#fa3e08'
 
 
 class Timer():
-    def __init__(self, label: str, steps: int = 1):
+    def __init__(self, label: str, registry_ref: dict, steps: int = 1):
         self.label = label
+        self.registry_ref = registry_ref
         self.steps = steps
 
     def __enter__(self):
@@ -23,8 +25,9 @@ class Timer():
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        elapsed = time.perf_counter() - self.start
-        self.pbar.desc = f'{self.label:<20s} {self.format_time(elapsed):>15s}'
+        self.elapsed = time.perf_counter() - self.start
+        self.registry_ref[self.label] = self.elapsed
+        self.pbar.desc = f'{self.label:<20s} {format_time_s(self.elapsed):>15s}'
         self.pbar.desc = f'{self.pbar.desc}'
         self.pbar.n = self.steps
         self.pbar.close()
@@ -32,19 +35,19 @@ class Timer():
     def step(self):
         self.pbar.update(1)
 
-    def format_time(self, time: int):
-        formatted = ''
-        for label, multiplier in [
-            ('h', 60 * 60),
-            ('m', 60),
-            ('s', 1),
-        ]:
-            value = time // multiplier
-            if value > 0:
-                time -= value * multiplier
-                formatted += f'{int(value)}{label} '
-        formatted += f'{int(time * 1000)}ms'
-        return formatted.strip()
+def format_time_s(time: int):
+    formatted = ''
+    for label, multiplier in [
+        ('h', 60 * 60),
+        ('m', 60),
+        ('s', 1),
+    ]:
+        value = time // multiplier
+        if value > 0:
+            time -= value * multiplier
+            formatted += f'{int(value)}{label} '
+    formatted += f'{int(time * 1000)}ms'
+    return formatted.strip()
 
 
 def sort_by_degree(g: nx.Graph):
@@ -62,7 +65,7 @@ def load() -> nx.Graph:
     g = nx.Graph()
     for i, row in df.iterrows():
         g.add_edge(row['Person A'], row['Person B'])
-        # if i == 10000: break
+        # if i == 1000: break
     print('INFO', len(g.nodes), 'nodes and', len(g.edges), 'edges')
     return g
 
@@ -73,26 +76,46 @@ def draw(filename: str,
 
     graph = load()
     plt.figure(figsize=(12, 12))
+    times = {}
 
-    with Timer('Calculating nodes'):
+    with Timer('Calculating nodes', times):
         nodes, node_kwargs = get_nodes(graph)
 
-    with Timer('Drawing nodes'):
+    with Timer('Drawing nodes', times):
         plt.scatter(nodes[:, 0], nodes[:, 1], zorder=2, **node_kwargs)
 
-    with Timer('Calculating edges'):
+    with Timer('Calculating edges', times):
         edges = get_edges(graph)
 
-    with Timer('Drawing edges', len(edges)) as timer:
+    with Timer('Drawing edges', times, len(edges)) as timer:
         nodes_ids = list(graph.nodes)
         for e1, e2, kwargs in edges:
             coordinates = np.array([nodes[nodes_ids.index(e1)], nodes[nodes_ids.index(e2)]])
             plt.plot(coordinates[:, 0], coordinates[:, 1], zorder=1, **kwargs)
             timer.step()
 
-    with Timer('Saving'):
+    with Timer('Saving', times):
         plt.axis('off')
         plt.xticks([])
         plt.yticks([])
         plt.tight_layout()
         plt.savefig(os.path.join('results', filename))
+    
+    return times
+
+
+def benchmark(n: int, *draw_args, **draw_kwargs):
+    times = []
+    for i in range(n):
+        print(f'\nBenchmark {i+1}/{n}\n')
+        t = draw(*draw_args, **draw_kwargs)
+        times.append(t)
+    
+    times = pd.DataFrame(times)
+    print(f'\n{times}\n')
+    
+    print('Average in CSV format')
+    means = pd.DataFrame(times.mean()).T.applymap(format_time_s)
+    stds = pd.DataFrame(times.std()).T.applymap(format_time_s)
+    all = means + '+-' + stds
+    all.to_csv(sys.stdout, index=False)

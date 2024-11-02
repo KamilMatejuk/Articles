@@ -1,7 +1,7 @@
 import networkx as nx
 import numpy as np
 
-from utils import draw, ORANGE, GREY
+from utils import benchmark, draw, ORANGE, GREY
 
 
 def get_nodes(graph: nx.Graph) -> tuple[np.ndarray, dict]:
@@ -23,3 +23,4 @@ def get_edges(graph: nx.Graph) -> list[tuple[int, int, dict]]:
 
 if __name__ == '__main__':
     draw('spiral.png', get_nodes, get_edges)
+    # benchmark(5, 'spiral.png', get_nodes, get_edges)
