@@ -1,0 +1,4 @@
+type,calc_nodes,draw_nodes,calc_edges,draw_edges,save
+basic grid,0ms,50ms,35ms,27s 191ms,10s 959ms
+basic cirle,1ms,44ms,37ms,27s 864ms,10s 438ms
+basic spiral,2ms,45ms,40ms,27s 553ms,9s 344ms

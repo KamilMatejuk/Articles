@@ -62,7 +62,7 @@ def load() -> nx.Graph:
     g = nx.Graph()
     for i, row in df.iterrows():
         g.add_edge(row['Person A'], row['Person B'])
-        if i == 10000: break
+        # if i == 10000: break
     print('INFO', len(g.nodes), 'nodes and', len(g.edges), 'edges')
     return g
 
