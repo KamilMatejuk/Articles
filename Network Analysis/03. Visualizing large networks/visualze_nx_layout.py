@@ -16,7 +16,6 @@ def get_nodes_shell(graph: nx.Graph) -> tuple[np.ndarray, dict]:        return g
 def get_nodes_spring(graph: nx.Graph) -> tuple[np.ndarray, dict]:       return get_nodes(graph, nx.spring_layout)
 def get_nodes_spectral(graph: nx.Graph) -> tuple[np.ndarray, dict]:     return get_nodes(graph, nx.spectral_layout)
 def get_nodes_kamada_kawai(graph: nx.Graph) -> tuple[np.ndarray, dict]: return get_nodes(graph, nx.kamada_kawai_layout)
-def get_nodes_planar(graph: nx.Graph) -> tuple[np.ndarray, dict]:       return get_nodes(graph, nx.planar_layout)
 
 
 def get_edges(graph: nx.Graph) -> list[tuple[int, int, dict]]:
@@ -30,10 +29,9 @@ if __name__ == '__main__':
         get_nodes_shell,
         get_nodes_spring,
         get_nodes_spectral,
-        get_nodes_kamada_kawai,
-        get_nodes_planar,
+        # get_nodes_kamada_kawai,
     ]:
         print(f'\n{get_nodes_function}\n')
         img_label = get_nodes_function.__name__.replace('get_nodes_', '').strip()
-        draw(f'nx_{img_label}.png', get_nodes_function, get_edges)
-        # benchmark(5, f'nx_{img_label}.png', get_nodes_function, get_edges)
+        # draw(f'nx_{img_label}.png', get_nodes_function, get_edges)
+        benchmark(5, f'nx_{img_label}.png', get_nodes_function, get_edges)
