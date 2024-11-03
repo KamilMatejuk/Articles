@@ -115,7 +115,7 @@ def benchmark(n: int, *draw_args, **draw_kwargs):
     print(f'\n{times}\n')
     
     print('Average in CSV format')
-    means = pd.DataFrame(times.mean()).T.applymap(format_time_s)
-    stds = pd.DataFrame(times.std()).T.applymap(format_time_s)
+    means = pd.DataFrame(times.mean()).T.map(format_time_s)
+    stds = pd.DataFrame(times.std()).T.map(format_time_s)
     all = means + '+-' + stds
     all.to_csv(sys.stdout, index=False)
