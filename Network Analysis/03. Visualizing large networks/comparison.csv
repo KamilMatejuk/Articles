@@ -2,3 +2,10 @@ type,calc_nodes,draw_nodes,calc_edges,draw_edges,save
 basic grid,0ms+-0ms,22ms+-12ms,36ms+-2ms,26s 880ms+-339ms,10s 732ms+-172ms
 basic circle,1ms+-0ms,23ms+-12ms,43ms+-13ms,30s 80ms+-2s 936ms,13s 860ms+-6s 851ms
 basic spiral,1ms+-0ms,22ms+-10ms,35ms+-1ms,26s 992ms+-334ms,8s 998ms+-55ms
+nx circular,27ms+-3ms,25ms+-20ms,41ms+-13ms,27s 994ms+-1s 82ms,10s 626ms+-168ms
+nx random,29ms+-9ms,18ms+-2ms,42ms+-11ms,29s 472ms+-3s 247ms,11s 121ms+-742ms
+nx shell,26ms+-2ms,19ms+-5ms,36ms+-3ms,31s 937ms+-6s 361ms,10s 967ms+-301ms
+nx_spring,29m 53s 986ms+-6s 833ms,44ms+-18ms,150ms+-236ms,27s 702ms+-1s 65ms,8s 447ms+-80ms
+nx_spectral,26m 44s 365ms+-4m 39s 119ms,31ms+-10ms,64ms+-7ms,28s 189ms+-2s 55ms,8s 70ms+-149ms
+nx_kamada_kawai,
+nx_planar,
