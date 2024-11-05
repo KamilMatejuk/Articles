@@ -1,0 +1,10 @@
+label,calc_nodes,draw_nodes,calc_edges,draw_edges,save
+Custom - Random,0ms±0ms,3ms±0ms,9ms±6ms,6s 36ms±624ms,3s 124ms±80ms
+Custom - Grid,0ms±0ms,3ms±0ms,9ms±6ms,5s 924ms±632ms,3s 155ms±72ms
+Custom - Circle,0ms±0ms,3ms±0ms,9ms±6ms,6s 49ms±662ms,3s 28ms±76ms
+Custom - Spiral,0ms±0ms,3ms±0ms,6ms±0ms,6s 412ms±1s 860ms,2s 222ms±6ms
+NetworkX - Circular,5ms±0ms,3ms±0ms,9ms±6ms,5s 967ms±629ms,3s 31ms±84ms
+NetworkX - Random,4ms±0ms,3ms±0ms,6ms±0ms,6s 326ms±1s 835ms,3s 28ms±31ms
+NetworkX - Shell,5ms±0ms,3ms±0ms,6ms±0ms,6s 704ms±3s 252ms,3s 18ms±19ms
+NetworkX - Spectral,1m 14s 851ms±9s 669ms,5ms±1ms,11ms±0ms,6s 253ms±569ms,1s 697ms±16ms
+NetworkX - Spring,8m 43s 116ms±4s 894ms,3ms±0ms,8ms±6ms,5s 731ms±586ms,2s 102ms±489ms

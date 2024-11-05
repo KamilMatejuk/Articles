@@ -119,3 +119,4 @@ def benchmark(n: int, *draw_args, **draw_kwargs):
     stds = pd.DataFrame(times.std()).T.map(format_time_s)
     all = means + '+-' + stds
     all.to_csv(sys.stdout, index=False)
+
