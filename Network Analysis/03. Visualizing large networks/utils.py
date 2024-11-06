@@ -55,9 +55,9 @@ def sort_by_degree(g: nx.Graph):
 
 
 def apply_alpha_based_on_degree(color: str, degree: int, min_degree: int = 1, max_degree: int = 256):
-    alpha = int((degree - min_degree) / (max_degree - min_degree) * 256)
-    if alpha > 200: return f'{color}{alpha:02x}'
-    return f'{color}00'
+    alpha = int((degree - min_degree) / (max_degree - min_degree) * 255)
+    alpha = 0.1 + 0.9 * alpha # between 10% and 100% oppacity
+    return f'{color}{alpha:02x}'
 
 
 def load() -> nx.Graph:
