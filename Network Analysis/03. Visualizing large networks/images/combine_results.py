@@ -25,4 +25,5 @@ if __name__ == '__main__':
     # generate('nx', orders=[1, 0, 2, 3, 4])
     # generate('edge_visibility_based_on_degree_lin', orders=[1, 0, 2, 3])
     # generate('edge_visibility_based_on_degree_pow', orders=[1, 0, 2, 3])
+    # generate('node_visibility_based_on_degree', orders=[1, 0, 2, 3])
     pass

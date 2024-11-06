@@ -50,10 +50,6 @@ def format_time_s(time: int):
     return formatted.strip()
 
 
-def sort_by_degree(g: nx.Graph):
-    return [n for n, _ in sorted(dict(g.degree()).items(), key=lambda x: x[1], reverse=True)]
-
-
 def apply_alpha_based_on_degree(color: str, degree: int, min_degree: int = 1, max_degree: int = 256):
     alpha = (degree - min_degree) / (max_degree - min_degree) * 255
     alpha = 10 + 0.96 * alpha # between 10% and 100% oppacity
@@ -72,7 +68,11 @@ def load() -> nx.Graph:
 
 def draw(filename: str,
          get_nodes: Callable[[nx.Graph], tuple[np.ndarray, dict]],
-         get_edges: Callable[[nx.Graph], list[tuple[int, int, dict]]]):
+         get_edges: Callable[[nx.Graph], list[tuple[int, int, dict]]],
+         get_node_name_list: Callable[[nx.Graph], list[str]] = None):
+
+    if get_node_name_list is None:
+        get_node_name_list = lambda g: list(g.nodes)
 
     graph = load()
     plt.figure(figsize=(12, 12))
@@ -88,7 +88,7 @@ def draw(filename: str,
         edges = get_edges(graph)
 
     with Timer('Drawing edges', times, len(edges)) as timer:
-        nodes_ids = list(graph.nodes)
+        nodes_ids = get_node_name_list(graph)
         for e1, e2, kwargs in edges:
             coordinates = np.array([nodes[nodes_ids.index(e1)], nodes[nodes_ids.index(e2)]])
             plt.plot(coordinates[:, 0], coordinates[:, 1], zorder=1, **kwargs)
