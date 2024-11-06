@@ -69,12 +69,11 @@ def load() -> nx.Graph:
 def draw(filename: str,
          get_nodes: Callable[[nx.Graph], tuple[np.ndarray, dict]],
          get_edges: Callable[[nx.Graph], list[tuple[int, int, dict]]],
-         get_node_name_list: Callable[[nx.Graph], list[str]] = None):
-
-    if get_node_name_list is None:
-        get_node_name_list = lambda g: list(g.nodes)
+         edit: Callable[[nx.Graph], nx.Graph] = None):
 
     graph = load()
+    if edit is not None: graph = edit(graph)
+
     plt.figure(figsize=(12, 12))
     times = {}
 
@@ -88,7 +87,7 @@ def draw(filename: str,
         edges = get_edges(graph)
 
     with Timer('Drawing edges', times, len(edges)) as timer:
-        nodes_ids = get_node_name_list(graph)
+        nodes_ids = list(graph.nodes)
         for e1, e2, kwargs in edges:
             coordinates = np.array([nodes[nodes_ids.index(e1)], nodes[nodes_ids.index(e2)]])
             plt.plot(coordinates[:, 0], coordinates[:, 1], zorder=1, **kwargs)

@@ -12,7 +12,7 @@ from visualze_edge_visibility_based_on_degree import get_edges
 
 def get_nodes(graph: nx.Graph, get_pos: Callable) -> tuple[np.ndarray, dict]:
     pos, kwargs = get_pos(graph)
-    degrees = [graph.degree(n) for n in graph.nodes()]
+    degrees = [graph.degree(n) for n in graph.nodes]
     degrees = [(d-min(degrees)) / (max(degrees)-min(degrees)) for d in degrees]
     degrees = [d**0.2 for d in degrees]
     colors = [apply_alpha_based_on_degree(ORANGE, d, min(degrees), max(degrees)) for d in degrees]

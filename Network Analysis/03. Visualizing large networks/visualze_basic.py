@@ -10,7 +10,7 @@ def get_nodes_random(graph: nx.Graph) -> tuple[np.ndarray, dict]:
 
 
 def get_nodes_grid(graph: nx.Graph) -> tuple[np.ndarray, dict]:
-    n = len(graph.nodes())
+    n = len(graph.nodes)
     # device equally into rows and cols
     cols = int(np.ceil(np.sqrt(n)))
     rows = int(np.ceil(n / cols))
@@ -25,7 +25,7 @@ def get_nodes_grid(graph: nx.Graph) -> tuple[np.ndarray, dict]:
 
 
 def get_nodes_circle(graph: nx.Graph) -> tuple[np.ndarray, dict]:
-    n = len(graph.nodes())
+    n = len(graph.nodes)
     # calculate angles and distances in radial coordinates
     t = np.linspace(0, 2 * np.pi, n)
     # convert to cartesian coordinates
@@ -37,7 +37,7 @@ def get_nodes_circle(graph: nx.Graph) -> tuple[np.ndarray, dict]:
 
 def get_nodes_spiral(graph: nx.Graph) -> tuple[np.ndarray, dict]:
     turns = 15
-    n = len(graph.nodes())
+    n = len(graph.nodes)
     # calculate angles and distances in radial coordinates
     t = np.linspace(0, turns * 2 * np.pi, n)
     r = np.linspace(0, 1, n)
