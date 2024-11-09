@@ -32,6 +32,7 @@ Most of my articles will be written in series, shown below.
 * [Network Analysis](./Graph%20Analysis)
   * [01. Complex Network Models: Benefits, Drawbacks, Construction Principles, Applications and Structure Analysis](./Network%20Analysis/01.%20Complex%20Network%20Models:%20Benefits,%20Drawbacks,%20Construction%20Principles,%20Applications%20and%20Structure%20Analysis/)
   * [02. Extracting your social network from LinkedIn](./Network%20Analysis/02.%20Extracting%20your%20social%20network%20from%20LinkedIn/)
+  * [03. Visualizing Large Networks](./Network%20Analysis/03.%20Visualizing%20large%20networks/)
   * work in progress ...
 * [Web Graphics Basics](./Web%20Graphics%20Basics)
   * work in progress ...
