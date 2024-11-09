@@ -13,7 +13,7 @@ def get_edges(graph: nx.Graph) -> list[tuple[int, int, dict]]:
     degrees = [d**4 for d in degrees]
     edges = []
     for (e1, e2), d in zip(graph.edges(), degrees):
-        color = apply_alpha_based_on_degree(GREY, d, min(degrees), max(degrees))
+        color = apply_alpha_based_on_degree(GREY, d, -0.2, 1)
         edges.append((e1, e2, dict(color=color)))
     return edges
 
