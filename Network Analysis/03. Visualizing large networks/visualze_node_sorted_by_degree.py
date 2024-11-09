@@ -9,7 +9,7 @@ from visualze_node_visibility_based_on_degree import get_nodes_grid, get_nodes_c
 
 def edit(graph: nx.Graph) -> list[str]:
     sorted_nodes = sorted(graph.nodes, key=lambda x: graph.degree(x), reverse=True)
-    graph.nodes = sorted_nodes
+    graph._node = {n: graph.nodes[n] for n in sorted_nodes}
     return graph
 
 
