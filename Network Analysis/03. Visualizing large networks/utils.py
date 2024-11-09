@@ -11,6 +11,7 @@ import os
 
 GREY = '#999999'
 ORANGE = '#fa3e08'
+GREEN = '#3d8c40'
 
 
 class Timer():
@@ -54,6 +55,11 @@ def apply_alpha_based_on_degree(color: str, degree: int, min_degree: int = 1, ma
     alpha = (degree - min_degree) / (max_degree - min_degree) * 255
     alpha = 10 + 0.96 * alpha # between 10% and 100% oppacity
     return f'{color}{int(alpha):02x}'
+
+
+def map01(data: list) -> list:
+    data = list(data)
+    return [(d-min(data)) / (max(data)-min(data)) for d in data]
 
 
 def load() -> nx.Graph:

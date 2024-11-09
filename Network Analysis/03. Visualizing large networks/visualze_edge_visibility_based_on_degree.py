@@ -2,15 +2,14 @@ from typing import Callable
 import networkx as nx
 import numpy as np
 
-from utils import benchmark, draw, apply_alpha_based_on_degree, GREY
+from utils import benchmark, draw, apply_alpha_based_on_degree, map01, GREY
 
 from visualze_basic import get_nodes_grid, get_nodes_circle, get_nodes_spiral
 from visualze_nx_layout import get_nodes_spring
 
 
 def get_edges(graph: nx.Graph) -> list[tuple[int, int, dict]]:
-    degrees = [(graph.degree(e1) + graph.degree(e2))/2 for e1, e2 in graph.edges()]
-    degrees = [(d-min(degrees)) / (max(degrees)-min(degrees)) for d in degrees]
+    degrees = map01((graph.degree(e1) + graph.degree(e2))/2 for e1, e2 in graph.edges())
     degrees = [d**4 for d in degrees]
     edges = []
     for (e1, e2), d in zip(graph.edges(), degrees):
