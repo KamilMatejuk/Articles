@@ -29,4 +29,6 @@ if __name__ == '__main__':
     # generate('node_sorted_by_degree', orders=[1, 0, 2, 3])
     # generate('simple_subgraphs_collapsed_com', orders=[1, 0, 3, 4, 2])
     # generate('simple_subgraphs_collapsed_deg', orders=[1, 0, 3, 4, 2])
+    # generate('underlying_structure_deghist')
+    # generate('underlying_structure_graph')
     pass
