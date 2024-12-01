@@ -26,7 +26,8 @@ def float_to_time(time: float) -> str:
 def bars_with_threshold(ax: plt.Axes, label: str, threshold: str | int,
                         values: list[str | int], color: str,
                         values2: list[str | int] = None, color2: str = None,
-                        is_time: bool = True, threshold_is_min: bool = True) -> None:
+                        is_time: bool = True, threshold_is_min: bool = True,
+                        omit_zeros_in_avg: bool = False) -> None:
     if is_time:
         values = list(map(time_to_float, values))
         if values2: values2 = list(map(time_to_float, values2))
@@ -54,8 +55,12 @@ def bars_with_threshold(ax: plt.Axes, label: str, threshold: str | int,
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     
-    # threshold and average
-    avg = int(sum(total_values) / len(total_values))
+    # threshold and 
+    if omit_zeros_in_avg:
+        non_zero_total_values = [v for v in total_values if v != 0]
+        avg = int(sum(non_zero_total_values) / len(non_zero_total_values))
+    else:
+        avg = int(sum(total_values) / len(total_values))
     label_thd = ('minimum ' if threshold_is_min else 'maximum ') + (float_to_time(threshold) if is_time else f'{threshold:.0f}') + ' daily'
     label_avg = f'average ' + (float_to_time(avg) if is_time else f'{avg:.0f}') + ' daily'
     ax.axhline(threshold, color='#023020', linestyle='dotted')
@@ -111,7 +116,7 @@ if __name__ == '__main__':
     passrate_calories = bars_with_threshold(axes[4], labels[4], 2900,
         [1826, 3179, 2783, 2145, 2361, 2222, 2325, 1796, 2860, 2789, 2537, 3148, 2458, 2756, 2224,
         2898, 2629, 2131, 0, 1487, 2349, 2822, 3640, 2465, 3578, 2306, 3016, 3233, 2395, 2480],
-        colors[5], is_time=False)
+        colors[5], is_time=False, omit_zeros_in_avg=True)
 
     passrate_phone = bars_with_threshold(axes[5], labels[5], '4h',
         ['3h 32m', '5h 19m', '3h 11m', '4h 30m', '1h 4m', '2h 29m', '3h 17m', '4h 55m', '6h 8m',
