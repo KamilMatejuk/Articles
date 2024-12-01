@@ -19,5 +19,4 @@ if __name__ == '__main__':
     g = nx.karate_club_graph()
     sim = SimluatorThresholdDeterministic(g, 10, 0, 'test', 0.3)
     sim.run()
-    SimluatorThresholdDeterministic.save_gif_iterations('test')
 

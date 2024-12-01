@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
+from matplotlib.axis import Axis
 from enum import Enum
 from pathlib import Path
+from io import BytesIO
 import networkx as nx
 from glob import glob
 import numpy as np
@@ -28,22 +30,27 @@ class Simluator(ABC):
         self.iteration = 1
         self.max_iterations = max_iterations
         self.prefix = prefix
-        Path('results', prefix).mkdir(parents=True, exist_ok=True)
+        os.makedirs('results', exist_ok=True)
         # first infection
         self.starting_node = starting_node
-        self.stats: dict[State, list[int]] = {s: [] for s in State}
+        self.stats: dict[State, list[list]] = {s: [] for s in State}
         for n in self.graph.nodes:
             if n == self.starting_node:
                 self.graph.nodes[n]['state'] = State.INFECTED
             else:
                 self.graph.nodes[n]['state'] = State.SUSEPTABLE
         self.update_stats()
-        self.save_img_iteration()
     
     def update_stats(self):
         for s in State:
-            self.stats[s].append(len([n for n, v in self.graph.nodes.items() if v['state'] == s]))
+            self.stats[s].append([n for n, v in self.graph.nodes.items() if v['state'] == s])
     
+    def log(self):
+        print(f'iter {str(self.iteration):<3s} | ' + ' | '.join(f'{s.name[0]} {str(len(self.stats[s][-1])):>3s}' for s in State))
+        with open(os.path.join('results', f'{self.prefix}.log'), 'a+') as f:
+            f.write(','.join([str(self.iteration)] + [str(len(self.stats[s][-1])) for s in (
+            State.SUSEPTABLE, State.EXPOSED, State.INFECTED, State.RECOVERED)]) + '\n')
+
     def run_iteration(self):
         new_states: dict[str, State] = {}
         for node in self.graph.nodes:
@@ -53,52 +60,65 @@ class Simluator(ABC):
         self.iteration += 1
     
     def run(self):
+        self.log()
         for _ in range(self.max_iterations - 1):
             self.run_iteration()
             self.update_stats()
-            self.save_img_iteration()
-            if self.stats[State.SUSEPTABLE][-1] == 0: break
-            if self.stats[State.INFECTED][-1] == 0: break
-        self.save_img_stats()
-        self.save_gif_iterations()
+            self.log()
+            if len(self.stats[State.SUSEPTABLE][-1]) == 0: break
+            if len(self.stats[State.INFECTED][-1]) == 0: break
+        self.generate_gif()
     
     @abstractmethod
     def check(self, node) -> State:
         raise NotImplementedError
+
+    def generate_gif(self, reverse: bool = True):
+        images = []
+        for i in range(self.iteration):
+            images.append(self.generate_gif_frame(i + 1))
+        if reverse:
+            images.extend(image.copy() for image in reversed(images[1:-1]))
+        else:
+            images.append(images[-1].copy())
+        imageio.mimsave(os.path.join('results', f'{self.prefix}.gif'), images, loop=0, duration=500)
     
-    def save_img_iteration(self):
-        plt.figure(figsize=(12, 12))
+    def generate_gif_frame(self, iteration: int):
+        fig = plt.figure(figsize=(12, 5))
+        gs = fig.add_gridspec(1, 2, width_ratios=[1, 1])
+        ax1 = fig.add_subplot(gs[0])
+        self.generate_gif_graph(ax1, iteration)
+        ax2 = fig.add_subplot(gs[1])
+        self.generate_gif_stats(ax2, iteration)
+        fig.suptitle(f'Iteration {iteration}', fontsize=16)
+        plt.tight_layout()
+        buf = BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        plt.close(fig)
+        return imageio.imread(buf)
+
+    def generate_gif_graph(self, ax: Axis, iteration: int):
+        for s in self.stats:
+            for n in self.stats[s][iteration-1]:
+                self.graph.nodes[n]['state'] = s
         nodes_ids = list(self.graph.nodes)
-        colors = [n['state'].value for n in self.graph.nodes.values()]
-        plt.scatter(self.graph_pos[:, 0], self.graph_pos[:, 1], zorder=2, c=colors, s=1000)
+        colors = [self.graph.nodes[n]['state'].value for n in self.graph.nodes]
+        ax.scatter(self.graph_pos[:, 0], self.graph_pos[:, 1], zorder=2, c=colors, s=100)
         for e1, e2 in self.graph.edges:
             coordinates = np.array([self.graph_pos[nodes_ids.index(e1)], self.graph_pos[nodes_ids.index(e2)]])
             plt.plot(coordinates[:, 0], coordinates[:, 1], zorder=1, color=GREY, linewidth=2)
-        plt.axis('off')
-        plt.xticks([])
-        plt.yticks([])
-        plt.suptitle(f'Iteration {self.iteration}', fontsize=16)
-        plt.tight_layout()
-        plt.savefig(os.path.join('results', self.prefix, f'iter_{self.iteration:04}.png'))
+        ax.axis('off')
+        ax.set_xticks([])
+        ax.set_yticks([])
 
-    def save_gif_iterations(self):
-        files = sorted(list(glob(os.path.join('results', self.prefix, 'iter_*.png'))))
-        images = []
-        for filename in files:
-            images.append(imageio.imread(filename))
-        imageio.mimsave(os.path.join('results', self.prefix, 'iter.gif'), images, loop=0, duration=500)
-        
-    def save_img_stats(self):
-        plt.figure(figsize=(9, 3))
+    def generate_gif_stats(self, ax: Axis, iteration: int):
         non_zero_states = [s for s in State if any(ss != 0 for ss in self.stats[s])]
-        plt.stackplot(range(len(self.stats[State.SUSEPTABLE])), [self.stats[s] for s in non_zero_states],
+        ax.stackplot(range(iteration), [list(map(len, self.stats[s][:iteration])) for s in non_zero_states],
                       labels=[s.name for s in non_zero_states],
                       colors=[s.value for s in non_zero_states])
-        plt.xlabel('Iteration')
-        plt.ylabel('Number of nodes')
-        plt.xlim(0, len(self.stats[State.SUSEPTABLE]) - 1)
-        plt.ylim(0, len(self.graph.nodes))
-        plt.xticks(range(0, len(self.stats[State.SUSEPTABLE])), range(1, len(self.stats[State.SUSEPTABLE]) + 1))
-        plt.legend()
-        plt.tight_layout()
-        plt.savefig(os.path.join('results', self.prefix, 'stats.png'))
+        ax.set_xlabel('Iteration')
+        ax.set_ylabel('Number of nodes')
+        ax.set_xlim(0, self.iteration - 1)
+        ax.set_ylim(0, len(self.graph.nodes))
+        ax.set_xticks(range(0, self.iteration), range(1, self.iteration + 1))
