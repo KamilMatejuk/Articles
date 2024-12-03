@@ -2,6 +2,7 @@ import networkx as nx
 import pandas as pd
 
 from simulator_threshold import SimluatorThresholdDeterministic, SimluatorThresholdStochastic
+from simlulator_cascade import SimluatorCascadeStochastic
 
 
 def load() -> nx.Graph:
@@ -17,6 +18,6 @@ def load() -> nx.Graph:
 if __name__ == '__main__':
     # g = load()
     g = nx.karate_club_graph()
-    sim = SimluatorThresholdDeterministic(g, 10, 0, 'test', 0.3)
+    sim = SimluatorCascadeStochastic(g, 10, 0, 'test', 0.3)
     sim.run()
 
