@@ -10,8 +10,7 @@ import numpy as np
 import imageio
 import os
 
-
-GREY = '#999999'
+from visualisator import Visualisator
 
 
 class State(Enum):
@@ -73,15 +72,11 @@ class Simluator(ABC):
     def check(self, node) -> State:
         raise NotImplementedError
 
-    def generate_gif(self, reverse: bool = True):
+    def generate_gif(self):
         images = []
         for i in range(self.iteration):
             images.append(self.generate_gif_frame(i + 1))
-        if reverse:
-            images.extend(image.copy() for image in reversed(images[1:-1]))
-        else:
-            images.append(images[-1].copy())
-        imageio.mimsave(os.path.join('results', f'{self.prefix}.gif'), images, loop=0, duration=500)
+        Visualisator.generate_gif(images, os.path.join('results', f'{self.prefix}.gif'), duration_ms=1000, reverse=True, interpolate_frames=10)
     
     def generate_gif_frame(self, iteration: int):
         fig = plt.figure(figsize=(12, 5))
@@ -107,7 +102,7 @@ class Simluator(ABC):
         ax.scatter(self.graph_pos[:, 0], self.graph_pos[:, 1], zorder=2, c=colors, s=100)
         for e1, e2 in self.graph.edges:
             coordinates = np.array([self.graph_pos[nodes_ids.index(e1)], self.graph_pos[nodes_ids.index(e2)]])
-            plt.plot(coordinates[:, 0], coordinates[:, 1], zorder=1, color=GREY, linewidth=2)
+            plt.plot(coordinates[:, 0], coordinates[:, 1], zorder=1, color='#999999', linewidth=2)
         ax.axis('off')
         ax.set_xticks([])
         ax.set_yticks([])
