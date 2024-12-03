@@ -1,8 +1,14 @@
 import networkx as nx
 import pandas as pd
 
-from simulator_threshold import SimluatorThresholdDeterministic, SimluatorThresholdStochastic
+from simlulator_epidemic import SimluatorEmpidemicSI
+from simlulator_epidemic import SimluatorEmpidemicSIR
+from simlulator_epidemic import SimluatorEmpidemicSIS
+from simlulator_epidemic import SimluatorEmpidemicSEIR
+from simlulator_epidemic import SimluatorEmpidemicSEIS
 from simlulator_cascade import SimluatorCascadeStochastic
+from simulator_threshold import SimluatorThresholdStochastic
+from simulator_threshold import SimluatorThresholdDeterministic
 
 
 def load() -> nx.Graph:
@@ -18,6 +24,6 @@ def load() -> nx.Graph:
 if __name__ == '__main__':
     # g = load()
     g = nx.karate_club_graph()
-    sim = SimluatorCascadeStochastic(g, 10, 0, 'test', 0.3)
+    sim = SimluatorEmpidemicSEIR(g, 10, 0, 'test', 0.3, 1, 2)
     sim.run()
 
