@@ -97,15 +97,7 @@ class Simluator(ABC):
         for s in self.stats:
             for n in self.stats[s][iteration-1]:
                 self.graph.nodes[n]['state'] = s
-        nodes_ids = list(self.graph.nodes)
-        colors = [self.graph.nodes[n]['state'].value for n in self.graph.nodes]
-        ax.scatter(self.graph_pos[:, 0], self.graph_pos[:, 1], zorder=2, c=colors, s=100)
-        for e1, e2 in self.graph.edges:
-            coordinates = np.array([self.graph_pos[nodes_ids.index(e1)], self.graph_pos[nodes_ids.index(e2)]])
-            plt.plot(coordinates[:, 0], coordinates[:, 1], zorder=1, color='#999999', linewidth=2)
-        ax.axis('off')
-        ax.set_xticks([])
-        ax.set_yticks([])
+        Visualisator.generate_graph(ax, self.graph, self.graph_pos)
 
     def generate_gif_stats(self, ax: Axis, iteration: int):
         non_zero_states = [s for s in State if any(ss != 0 for ss in self.stats[s])]
