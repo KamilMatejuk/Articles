@@ -21,12 +21,12 @@ def generate_graph() -> nx.Graph:
     g.add_edge('B', 'C')
     g.add_edge('B', 'F')
     g.add_edge('D', 'E')
-    g.nodes[central_node]['state'] = State.SUSEPTABLE
+    g.nodes[central_node]['state'] = State.SUSCEPTIBLE
     g.nodes['B']['state'] = State.INFECTED
     g.nodes['C']['state'] = State.INFECTED
-    g.nodes['D']['state'] = State.SUSEPTABLE
+    g.nodes['D']['state'] = State.SUSCEPTIBLE
     g.nodes['E']['state'] = State.INFECTED
-    g.nodes['F']['state'] = State.SUSEPTABLE
+    g.nodes['F']['state'] = State.SUSCEPTIBLE
     return g
 
 

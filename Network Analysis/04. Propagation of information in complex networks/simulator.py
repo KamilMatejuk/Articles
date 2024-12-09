@@ -14,7 +14,7 @@ from visualisator import Visualisator
 
 
 class State(Enum):
-    SUSEPTABLE = '#3BBA6C'
+    SUSCEPTIBLE = '#3BBA6C'
     EXPOSED = '#ECF452'
     INFECTED = '#E4572E'
     RECOVERED = '#6290C3'
@@ -37,7 +37,7 @@ class Simluator(ABC):
             if n == self.starting_node:
                 self.graph.nodes[n]['state'] = State.INFECTED
             else:
-                self.graph.nodes[n]['state'] = State.SUSEPTABLE
+                self.graph.nodes[n]['state'] = State.SUSCEPTIBLE
         self.update_stats()
     
     def update_stats(self):
@@ -48,7 +48,7 @@ class Simluator(ABC):
         print(f'iter {str(self.iteration):<3s} | ' + ' | '.join(f'{s.name[0]} {str(len(self.stats[s][-1])):>3s}' for s in State))
         with open(os.path.join('results', f'{self.prefix}.log'), 'a+') as f:
             f.write(','.join([str(self.iteration)] + [str(len(self.stats[s][-1])) for s in (
-            State.SUSEPTABLE, State.EXPOSED, State.INFECTED, State.RECOVERED)]) + '\n')
+            State.SUSCEPTIBLE, State.EXPOSED, State.INFECTED, State.RECOVERED)]) + '\n')
 
     def run_iteration(self):
         new_states: dict[str, State] = {}
@@ -64,7 +64,7 @@ class Simluator(ABC):
             self.run_iteration()
             self.update_stats()
             self.log()
-            if len(self.stats[State.SUSEPTABLE][-1]) == 0: break
+            if len(self.stats[State.SUSCEPTIBLE][-1]) == 0: break
             if len(self.stats[State.INFECTED][-1]) == 0: break
         self.generate_gif()
     

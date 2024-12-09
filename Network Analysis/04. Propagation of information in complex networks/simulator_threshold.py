@@ -17,7 +17,7 @@ class SimluatorThreshold(Simluator):
             return State.INFECTED
         if self.check_if_becomes_infected(node):
             return State.INFECTED
-        return State.SUSEPTABLE
+        return State.SUSCEPTIBLE
     
     @abstractmethod
     def check_if_becomes_infected(self, node):

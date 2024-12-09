@@ -54,42 +54,42 @@ class SimluatorEmpidemic(Simluator):
 
 class SimluatorEmpidemicSI(SimluatorEmpidemic):
     def __init__(self, graph: nx.Graph, max_iterations: int, starting_node: str, prefix: str,
-                 suseptable_to_infected_probability: float):
+                 SUSCEPTIBLE_to_infected_probability: float):
         super().__init__(graph, max_iterations, starting_node, prefix)
         self.transitions = [
-            Transition(State.SUSEPTABLE, State.INFECTED, TransitionType.PROBABILITY_FROM_NEIGHBORS, suseptable_to_infected_probability),
+            Transition(State.SUSCEPTIBLE, State.INFECTED, TransitionType.PROBABILITY_FROM_NEIGHBORS, SUSCEPTIBLE_to_infected_probability),
         ]
 
 
 class SimluatorEmpidemicSIR(SimluatorEmpidemic):
     def __init__(self, graph: nx.Graph, max_iterations: int, starting_node: str, prefix: str,
-                 suseptable_to_infected_probability: float, infected_to_recovered_duration: int):
+                 SUSCEPTIBLE_to_infected_probability: float, infected_to_recovered_duration: int):
         super().__init__(graph, max_iterations, starting_node, prefix)
         self.transitions = [
-            Transition(State.SUSEPTABLE, State.INFECTED, TransitionType.PROBABILITY_FROM_NEIGHBORS, suseptable_to_infected_probability),
+            Transition(State.SUSCEPTIBLE, State.INFECTED, TransitionType.PROBABILITY_FROM_NEIGHBORS, SUSCEPTIBLE_to_infected_probability),
             Transition(State.INFECTED, State.RECOVERED, TransitionType.DURATION, infected_to_recovered_duration),
         ]
 
 
 class SimluatorEmpidemicSIS(SimluatorEmpidemic):
     def __init__(self, graph: nx.Graph, max_iterations: int, starting_node: str, prefix: str,
-                 suseptable_to_infected_probability: float, infected_to_suseptable_duration: int):
+                 SUSCEPTIBLE_to_infected_probability: float, infected_to_SUSCEPTIBLE_duration: int):
         super().__init__(graph, max_iterations, starting_node, prefix)
         self.transitions = [
-            Transition(State.SUSEPTABLE, State.INFECTED, TransitionType.PROBABILITY_FROM_NEIGHBORS, suseptable_to_infected_probability),
-            Transition(State.INFECTED, State.SUSEPTABLE, TransitionType.DURATION, infected_to_suseptable_duration),
+            Transition(State.SUSCEPTIBLE, State.INFECTED, TransitionType.PROBABILITY_FROM_NEIGHBORS, SUSCEPTIBLE_to_infected_probability),
+            Transition(State.INFECTED, State.SUSCEPTIBLE, TransitionType.DURATION, infected_to_SUSCEPTIBLE_duration),
         ]
 
 
 class SimluatorEmpidemicSEIR(SimluatorEmpidemic):
     def __init__(self, graph: nx.Graph, max_iterations: int, starting_node: str, prefix: str,
-                 suseptable_to_exposed_probability: float,
+                 SUSCEPTIBLE_to_exposed_probability: float,
                  exposed_to_infected_duration: int,
                  infected_to_recovered_duration: int):
         super().__init__(graph, max_iterations, starting_node, prefix)
         self.graph.nodes[self.starting_node]['state'] = State.EXPOSED
         self.transitions = [
-            Transition(State.SUSEPTABLE, State.EXPOSED, TransitionType.PROBABILITY_FROM_NEIGHBORS, suseptable_to_exposed_probability),
+            Transition(State.SUSCEPTIBLE, State.EXPOSED, TransitionType.PROBABILITY_FROM_NEIGHBORS, SUSCEPTIBLE_to_exposed_probability),
             Transition(State.EXPOSED, State.INFECTED, TransitionType.DURATION, exposed_to_infected_duration),
             Transition(State.INFECTED, State.RECOVERED, TransitionType.DURATION, infected_to_recovered_duration),
         ]
@@ -97,13 +97,13 @@ class SimluatorEmpidemicSEIR(SimluatorEmpidemic):
 
 class SimluatorEmpidemicSEIS(SimluatorEmpidemic):
     def __init__(self, graph: nx.Graph, max_iterations: int, starting_node: str, prefix: str,
-                 suseptable_to_exposed_probability: float,
+                 SUSCEPTIBLE_to_exposed_probability: float,
                  exposed_to_infected_duration: int,
-                 infected_to_suseptable_duration: int):
+                 infected_to_SUSCEPTIBLE_duration: int):
         super().__init__(graph, max_iterations, starting_node, prefix)
         self.graph.nodes[self.starting_node]['state'] = State.EXPOSED
         self.transitions = [
-            Transition(State.SUSEPTABLE, State.EXPOSED, TransitionType.PROBABILITY_FROM_NEIGHBORS, suseptable_to_exposed_probability),
+            Transition(State.SUSCEPTIBLE, State.EXPOSED, TransitionType.PROBABILITY_FROM_NEIGHBORS, SUSCEPTIBLE_to_exposed_probability),
             Transition(State.EXPOSED, State.INFECTED, TransitionType.DURATION, exposed_to_infected_duration),
-            Transition(State.INFECTED, State.SUSEPTABLE, TransitionType.DURATION, infected_to_suseptable_duration),
+            Transition(State.INFECTED, State.SUSCEPTIBLE, TransitionType.DURATION, infected_to_SUSCEPTIBLE_duration),
         ]

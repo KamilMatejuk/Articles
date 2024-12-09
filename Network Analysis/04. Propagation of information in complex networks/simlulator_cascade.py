@@ -19,11 +19,11 @@ class SimluatorCascadeStochastic(Simluator):
                 continue
             if (n, node) in self.infection_tries:
                 # already tried, cannot again
-                return State.SUSEPTABLE
+                return State.SUSCEPTIBLE
             # tries infecting
             self.infection_tries.add((n, node))
             r = random.random()
             if r >= self.threshold:
                 return State.INFECTED
-        return State.SUSEPTABLE
+        return State.SUSCEPTIBLE
     
