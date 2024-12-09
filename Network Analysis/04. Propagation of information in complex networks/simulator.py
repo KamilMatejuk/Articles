@@ -76,7 +76,7 @@ class Simluator(ABC):
         images = []
         for i in range(self.iteration):
             images.append(self.generate_gif_frame(i + 1))
-        Visualisator.generate_gif(images, os.path.join('results', f'{self.prefix}.gif'), duration_ms=1000, reverse=True, interpolate_frames=10)
+        Visualisator.generate_gif(images, os.path.join('results', f'{self.prefix}.gif'), total_duration=10, reverse=True, interpolate_frames=0)
     
     def generate_gif_frame(self, iteration: int):
         fig = plt.figure(figsize=(12, 5))
@@ -97,7 +97,7 @@ class Simluator(ABC):
         for s in self.stats:
             for n in self.stats[s][iteration-1]:
                 self.graph.nodes[n]['state'] = s
-        Visualisator.generate_graph(ax, self.graph, self.graph_pos, node_kwargs=dict(s=100), edge_kwargs=dict(linewidth=2))
+        Visualisator.generate_graph(ax, self.graph, self.graph_pos, node_kwargs=dict(s=50), edge_kwargs=dict(linewidth=1))
 
     def generate_gif_stats(self, ax: Axis, iteration: int):
         non_zero_states = [s for s in State if any(ss != 0 for ss in self.stats[s])]

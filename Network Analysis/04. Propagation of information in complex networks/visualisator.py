@@ -8,7 +8,7 @@ class Visualisator:
 
     @classmethod
     @staticmethod
-    def generate_gif(images: list[np.ndarray], path: str, duration_ms: int, reverse: bool = False, interpolate_frames: int = 0):
+    def generate_gif(images: list[np.ndarray], path: str, total_duration: int, reverse: bool = False, interpolate_frames: int = 0):
         if reverse:
             images.extend(image.copy() for image in reversed(images[1:-1]))
         else:
@@ -19,9 +19,8 @@ class Visualisator:
             for image1, image2 in zip(images[:-1], images[1:]):
                 interpolated.extend(Visualisator.interpolate(image1, image2, interpolate_frames))
             images = interpolated
-            duration_ms /= (interpolate_frames + 1)
 
-        imageio.mimsave(path, images, loop=0, duration=duration_ms)
+        imageio.mimsave(path, images, loop=0, duration=1000 * total_duration / len(images))
 
     @classmethod
     @staticmethod

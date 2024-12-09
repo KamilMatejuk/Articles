@@ -1,5 +1,4 @@
 import networkx as nx
-import pandas as pd
 
 from simlulator_epidemic import SimluatorEmpidemicSI
 from simlulator_epidemic import SimluatorEmpidemicSIR
@@ -11,19 +10,12 @@ from simulator_threshold import SimluatorThresholdStochastic
 from simulator_threshold import SimluatorThresholdDeterministic
 
 
-def load() -> nx.Graph:
-    df = pd.read_csv('network_edges.csv')
-    g = nx.Graph()
-    for i, row in df.iterrows():
-        g.add_edge(row['Person A'], row['Person B'])
-        # if i == 1000: break
-    print('INFO', len(g.nodes), 'nodes and', len(g.edges), 'edges')
-    return g
-
-
 if __name__ == '__main__':
-    # g = load()
-    g = nx.karate_club_graph()
-    sim = SimluatorEmpidemicSEIR(g, 10, 0, 'test', 0.3, 1, 2)
+    g = nx.les_miserables_graph()
+    
+    closeness_centrality = nx.closeness_centrality(g)
+    start_node = max(closeness_centrality, key=closeness_centrality.get)
+
+    sim = SimluatorEmpidemicSEIR(g, 20, start_node, 'spread_all_epidemic_seir_0.25_1_2', 0.25, 1, 2)
     sim.run()
 
