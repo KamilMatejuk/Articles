@@ -12,7 +12,7 @@ def position_n_circle(n: int):
     return points
 
 
-def generate_graph() -> nx.Graph:
+def generate_graph(states: list[State]) -> nx.Graph:
     g = nx.Graph()
     central_node = 'A'
     outer_nodes = ['B', 'C', 'D', 'E', 'F']
@@ -22,11 +22,8 @@ def generate_graph() -> nx.Graph:
     g.add_edge('B', 'F')
     g.add_edge('D', 'E')
     g.nodes[central_node]['state'] = State.SUSCEPTIBLE
-    g.nodes['B']['state'] = State.INFECTED
-    g.nodes['C']['state'] = State.INFECTED
-    g.nodes['D']['state'] = State.SUSCEPTIBLE
-    g.nodes['E']['state'] = State.INFECTED
-    g.nodes['F']['state'] = State.SUSCEPTIBLE
+    for node, state in zip(outer_nodes, states):
+        g.nodes[node]['state'] = state
     return g
 
 
@@ -49,7 +46,33 @@ def show_both_graphs(g1: nx.Graph, g2: nx.Graph, filename: str):
 
 
 if __name__ == '__main__':
-    graph = generate_graph()
+    graph = generate_graph([State.INFECTED, State.INFECTED, State.SUSCEPTIBLE, State.INFECTED, State.SUSCEPTIBLE])
     new_graph = graph.copy()
     new_graph.nodes['A']['state'] = State.INFECTED
-    show_both_graphs(graph, new_graph, 'example.png')
+    show_both_graphs(graph, new_graph, 'images/example_single_iter_threshold.png')
+
+    graph = generate_graph([State.INFECTED, State.INFECTED, State.SUSCEPTIBLE, State.SUSCEPTIBLE, State.SUSCEPTIBLE])
+    new_graph = graph.copy()
+    new_graph.nodes['A']['state'] = State.INFECTED
+    show_both_graphs(graph, new_graph, 'images/example_single_iter_cascade.png')
+
+    graph = generate_graph([State.SUSCEPTIBLE, State.INFECTED, State.SUSCEPTIBLE, State.INFECTED, State.SUSCEPTIBLE])
+    new_graph = graph.copy()
+    new_graph.nodes['A']['state'] = State.INFECTED
+    show_both_graphs(graph, new_graph, 'images/example_single_iter_epidemic_si.png')
+
+    for s, name in [(State.SUSCEPTIBLE, 'sis'), (State.RECOVERED, 'sir')]:
+        graph = generate_graph([State.SUSCEPTIBLE, State.INFECTED, State.SUSCEPTIBLE, State.INFECTED, State.SUSCEPTIBLE])
+        new_graph = graph.copy()
+        new_graph.nodes['A']['state'] = State.INFECTED
+        new_graph.nodes['E']['state'] = s
+        show_both_graphs(graph, new_graph, f'images/example_single_iter_epidemic_{name}.png')
+
+    for s, name in [(State.SUSCEPTIBLE, 'seis'), (State.RECOVERED, 'seir')]:
+        graph = generate_graph([State.SUSCEPTIBLE, State.INFECTED, State.SUSCEPTIBLE, State.INFECTED, State.SUSCEPTIBLE])
+        graph.nodes['B']['state'] = State.EXPOSED
+        new_graph = graph.copy()
+        new_graph.nodes['A']['state'] = State.EXPOSED
+        new_graph.nodes['B']['state'] = State.INFECTED
+        new_graph.nodes['E']['state'] = s
+        show_both_graphs(graph, new_graph, f'images/example_single_iter_epidemic_{name}.png')
