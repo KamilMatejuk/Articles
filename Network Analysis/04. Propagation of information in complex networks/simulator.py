@@ -2,10 +2,8 @@ from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 from matplotlib.axis import Axis
 from enum import Enum
-from pathlib import Path
 from io import BytesIO
 import networkx as nx
-from glob import glob
 import numpy as np
 import imageio
 import os
@@ -29,7 +27,6 @@ class Simluator(ABC):
         self.iteration = 1
         self.max_iterations = max_iterations
         self.prefix = prefix
-        os.makedirs('results', exist_ok=True)
         # first infection
         self.starting_node = starting_node
         self.stats: dict[State, list[list]] = {s: [] for s in State}
@@ -46,9 +43,6 @@ class Simluator(ABC):
     
     def log(self):
         print(f'iter {str(self.iteration):<3s} | ' + ' | '.join(f'{s.name[0]} {str(len(self.stats[s][-1])):>3s}' for s in State))
-        with open(os.path.join('results', f'{self.prefix}.log'), 'a+') as f:
-            f.write(','.join([str(self.iteration)] + [str(len(self.stats[s][-1])) for s in (
-            State.SUSCEPTIBLE, State.EXPOSED, State.INFECTED, State.RECOVERED)]) + '\n')
 
     def run_iteration(self):
         new_states: dict[str, State] = {}
