@@ -6,29 +6,13 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from typing import Callable, Any
 
+from utils import load, get_node_rank
+
 
 COLOR = '#FF3C00'
 COLOR_RANK_1 = '#E4572E'
 COLOR_RANK_2 = '#6290C3'
 COLOR_RANK_3 = '#3BBA6C'
-
-
-def load() -> nx.Graph:
-    df = pd.read_csv('network_edges.csv')
-    g = nx.Graph()
-    for i, row in df.iterrows():
-        g.add_edge(row['Person A'], row['Person B'])
-        # if i == 1000: break
-    print('INFO', len(g.nodes), 'nodes and', len(g.edges), 'edges')
-    return g
-
-
-def get_node_rank(graph: nx.Graph, node: str):
-    if node == "me":
-        return 1
-    if node in graph.neighbors("me"):
-        return 2
-    return 3
 
 
 def plot_distribution(values: list[float | int], filename: str, log: bool = True):
