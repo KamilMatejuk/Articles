@@ -8,6 +8,9 @@ from typing import Callable, Any
 
 
 COLOR = '#FF3C00'
+COLOR_RANK_1 = '#E4572E'
+COLOR_RANK_2 = '#6290C3'
+COLOR_RANK_3 = '#3BBA6C'
 
 
 def load() -> nx.Graph:
@@ -20,26 +23,35 @@ def load() -> nx.Graph:
     return g
 
 
-def plot_distribution(values: list[float | int], filename: str):
-    fig, ax = plt.subplots(figsize=(12, 4))
-    if isinstance(values[0], int):
-        bins = range(min(values), max(values) + 2)
-        width = 0.9
-    else:
-        bins = 25
-        width = 0.9 * (max(values) - min(values)) / bins
+def get_node_rank(graph: nx.Graph, node: str):
+    if node == "me":
+        return 1
+    if node in graph.neighbors("me"):
+        return 2
+    return 3
 
+
+def plot_distribution(values: list[float | int], filename: str, log: bool = True):
+    fig, ax = plt.subplots(figsize=(12, 4))
+    bins = 50
+    width = 0.9 * (max(values) - min(values)) / bins
+    if isinstance(values[0], int) and width < 0.9: width = 0.9
+    
     hist, bins = np.histogram(values, bins=bins, density=False)
     ax.bar(bins[:-1], hist, width=width, color=COLOR)
     ax.set_ylabel('Frequency')
-    # ax.set_yscale('log')
+    if log: ax.set_yscale('log')
     fig.tight_layout()
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
+    if log: filename = filename.replace('.png', '_log.png')
     plt.savefig(f'images/{filename}')
 
 
-def get_distribution(graph: nx.Graph, func: Callable[[nx.Graph, str], float | int], description: str, preprocess_func: Callable[[nx.Graph], Any] = None):
+def get_distribution(
+        graph: nx.Graph, func: Callable[[nx.Graph, str], float | int], description: str, preprocess_func: Callable[[nx.Graph], Any] = None
+    ) -> tuple[list[float | int], list[float | int], list[float | int]]:
+
     filename = os.path.join('logs', description.replace(' ', '_').lower() + '.csv')
     if os.path.exists(filename): data = pd.read_csv(filename)
     else: data = pd.DataFrame(columns=['Node', 'Value'])
@@ -75,25 +87,40 @@ def get_distribution(graph: nx.Graph, func: Callable[[nx.Graph, str], float | in
                 with open(filename, 'a+') as f:
                     f.write(f'{node},{v}\n')
 
-    return data['Value'].tolist()
+    data['rank'] = data['Node'].apply(lambda n: get_node_rank(graph, n))
+    return (data[data['rank'] == 1]['Value'].tolist(),
+            data[data['rank'] == 2]['Value'].tolist(),
+            data[data['rank'] == 3]['Value'].tolist())
 
 
-def plot_degree_distribution(graph: nx.Graph, filename: str):
+def plot_degree_distribution(graph: nx.Graph):
     values = get_distribution(graph, nx.degree, 'Degree distribution')
-    plot_distribution(values, filename)
+    print('me', values[0][0])
+    print(f'my connections: avg {np.mean(values[1])} median {np.median(values[1])}')
+    print(f'connections of my connections: avg {np.mean(values[2])} median {np.median(values[2])}')
+    plot_distribution(values[1], 'dist_degree_2.png')
+    plot_distribution(values[2], 'dist_degree_3.png')
 
 
-def plot_betweenness_centrality_distribution(graph: nx.Graph, filename: str):
+def plot_betweenness_centrality_distribution(graph: nx.Graph):
     values = get_distribution(graph, lambda bc, n: bc[n], 'Betweenness centrality distribution', lambda g: nx.betweenness_centrality(g, k=1000))
-    plot_distribution(values, filename)
+    print('me', values[0][0])
+    print(f'my connections: avg {np.mean(values[1])} median {np.median(values[1])}')
+    print(f'connections of my connections: avg {np.mean(values[2])} median {np.median(values[2])}')
+    plot_distribution(values[1], 'dist_betweenness_centrality_2.png')
+    plot_distribution(values[2], 'dist_betweenness_centrality_3.png')
 
 
-def plot_closeness_centrality_distribution(graph: nx.Graph, filename: str):
+def plot_closeness_centrality_distribution(graph: nx.Graph):
     values = get_distribution(graph, nx.closeness_centrality, 'Closeness centrality distribution')
-    plot_distribution(values, filename)
+    print('me', values[0][0])
+    print(f'my connections: avg {np.mean(values[1])} median {np.median(values[1])}')
+    print(f'connections of my connections: avg {np.mean(values[2])} median {np.median(values[2])}')
+    plot_distribution(values[1], 'dist_closeness_centrality_2.png')
+    plot_distribution(values[2], 'dist_closeness_centrality_3.png')
 
 
-def plot_shortest_path_distribution(graph: nx.Graph, filename: str):
+def plot_shortest_path_distribution(graph: nx.Graph):
     def func(g: nx.Graph, node: str):
         path_lens = []
         for n in g.nodes():
@@ -101,13 +128,17 @@ def plot_shortest_path_distribution(graph: nx.Graph, filename: str):
             path_lens.append(nx.shortest_path_length(g, node, n))
         return np.mean(path_lens)
     values = get_distribution(graph, func, 'Shortest path distribution')
-    plot_distribution(values, filename)
+    print('me', values[0][0])
+    print(f'my connections: avg {np.mean(values[1])} median {np.median(values[1])}')
+    print(f'connections of my connections: avg {np.mean(values[2])} median {np.median(values[2])}')
+    plot_distribution(values[1], 'dist_shortest_path_2.png')
+    plot_distribution(values[2], 'dist_shortest_path_3.png')
 
 
 if __name__ == '__main__':
     g = load()
     print(f'Loaded graph with {len(g.nodes)} nodes and {len(g.edges)} edges')
-    plot_degree_distribution(g, 'dist_degree.png')
-    plot_betweenness_centrality_distribution(g, 'dist_betweenness_centrality.png')
-    plot_closeness_centrality_distribution(g, 'dist_closeness_centrality.png')
-    plot_shortest_path_distribution(g, 'dist_shortest_path.png')
+    plot_degree_distribution(g)
+    plot_betweenness_centrality_distribution(g)
+    plot_closeness_centrality_distribution(g)
+    plot_shortest_path_distribution(g)
