@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from typing import Callable
+from typing import Callable, Any
 
 
 COLOR = '#FF3C00'
@@ -32,33 +32,41 @@ def plot_distribution(values: list[float | int], filename: str):
     hist, bins = np.histogram(values, bins=bins, density=False)
     ax.bar(bins[:-1], hist, width=width, color=COLOR)
     ax.set_ylabel('Frequency')
-    ax.set_yscale('log')
+    # ax.set_yscale('log')
     fig.tight_layout()
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.savefig(f'images/{filename}')
 
 
-def get_distribution(graph: nx.Graph, func: Callable[[nx.Graph, str], float | int], description: str):
-    filename = description.replace(' ', '_').lower() + '.csv'
+def get_distribution(graph: nx.Graph, func: Callable[[nx.Graph, str], float | int], description: str, preprocess_func: Callable[[nx.Graph], Any] = None):
+    filename = os.path.join('logs', description.replace(' ', '_').lower() + '.csv')
     if os.path.exists(filename): data = pd.read_csv(filename)
     else: data = pd.DataFrame(columns=['Node', 'Value'])
+    
+    preprocessed: Any = None
+    n = len(graph.nodes())
     
     with tqdm.tqdm(graph.nodes(), desc=description) as pbar:
         for node in pbar:
             # don't repeat if already calculated
-            if len(data) == len(graph.nodes()):
+            if len(data) == n:
                 pbar.total = len(data)
                 pbar.n = len(data)
                 continue
             if node in data['Node'].values:
                 continue
             
+            # preprocess
+            if preprocess_func is not None:
+                if preprocessed is None:
+                    preprocessed = preprocess_func(graph)
+
             # calculate
-            v = func(graph, node)
+            v = func(graph, node) if preprocessed is None else func(preprocessed, node)
             
             # save to in-memory object
-            data = pd.concat([data, pd.DataFrame({'Node': [node], 'Value': [v]})], ignore_index=True)
+            data = pd.concat([data, pd.DataFrame([{'Node': [node], 'Value': [v]}])], ignore_index=True)
             
             # save to file
             if len(data) == 1:
@@ -76,16 +84,12 @@ def plot_degree_distribution(graph: nx.Graph, filename: str):
 
 
 def plot_betweenness_centrality_distribution(graph: nx.Graph, filename: str):
-    bc = nx.betweenness_centrality(graph)
-    with open('bc.txt', 'w+') as f: f.write(str(bc))
-    values = get_distribution(graph, lambda _, n: bc[n], 'Betweenness centrality distribution')
+    values = get_distribution(graph, lambda bc, n: bc[n], 'Betweenness centrality distribution', lambda g: nx.betweenness_centrality(g, k=1000))
     plot_distribution(values, filename)
 
 
 def plot_closeness_centrality_distribution(graph: nx.Graph, filename: str):
-    cc = nx.closeness_centrality(graph)
-    with open('cc.txt', 'w+') as f: f.write(str(cc))
-    values = get_distribution(graph, lambda _, n: cc[n], 'Closeness centrality distribution')
+    values = get_distribution(graph, nx.closeness_centrality, 'Closeness centrality distribution')
     plot_distribution(values, filename)
 
 
