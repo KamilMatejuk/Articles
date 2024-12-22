@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-from matplotlib.axis import Axis
 from enum import Enum, auto
 from io import BytesIO
 import networkx as nx
@@ -7,10 +6,11 @@ import numpy as np
 import dataclasses
 import random
 import imageio
+import tqdm
 import os
 
 
-from utils import load, get_node_rank
+from utils import load, get_node_rank, get_circular_positions
 
 
 class State(Enum):
@@ -114,12 +114,12 @@ class SimluatorEmpidemicSEIR:
         images = []
         for i in range(self.iteration):
             images.append(self.generate_gif_frame(i + 1))
-        total_duration = 10
+        total_duration = 20
         images.extend(image.copy() for image in reversed(images[1:-1])) # reverse
         imageio.mimsave(os.path.join('images', f'{self.prefix}.gif'), images, loop=0, duration=1000 * total_duration / len(images))
     
     def generate_gif_frame(self, iteration: int):
-        fig = plt.figure(figsize=(12, 5))
+        fig = plt.figure(figsize=(12, 6.5))
         gs = fig.add_gridspec(1, 2, width_ratios=[1, 1])
         ax1 = fig.add_subplot(gs[0])
         self.generate_gif_graph(ax1, iteration)
@@ -133,14 +133,28 @@ class SimluatorEmpidemicSEIR:
         plt.close(fig)
         return imageio.v2.imread(buf)
 
-    def generate_gif_graph(self, ax: Axis, iteration: int):
+    def generate_gif_graph(self, ax: plt.Axes, iteration: int):
         for s in self.stats:
             for n in self.stats[s][iteration-1]:
                 self.graph.nodes[n]['state'] = s
-        # TODO
-        ax.axes('off')
+        positions = {'me': (0, 0)}
+        nodes_2 = [n for n in self.graph.nodes if n != 'me']
+        # me
+        x, y = positions['me']
+        ax.scatter(x, y, zorder=2, s=50, c=self.graph.nodes['me']['state'].value)
+        # my connections
+        pos = get_circular_positions(1, len(self.graph.nodes)-1)
+        colors = [self.graph.nodes[n]['state'].value for n in nodes_2]
+        plt.scatter(pos[:, 0], pos[:, 1], zorder=2, s=50, c=colors)
+        for node, (x, y) in zip(nodes_2, pos):
+            positions[node] = (x, y)
+        for e1, e2 in tqdm.tqdm(self.graph.edges):
+            if e1 not in positions or e2 not in positions: continue
+            coordinates = np.array([positions[e1], positions[e2]])
+            plt.plot(coordinates[:, 0], coordinates[:, 1], zorder=1, color=f'#99999955', linewidth=0.5)
+        ax.axis('off')
 
-    def generate_gif_stats(self, ax: Axis, iteration: int):
+    def generate_gif_stats(self, ax: plt.Axes, iteration: int):
         non_zero_states = [s for s in State if any(ss != 0 for ss in self.stats[s])]
         ax.stackplot(range(iteration), [list(map(len, self.stats[s][:iteration])) for s in non_zero_states],
                       labels=[s.name for s in non_zero_states],
@@ -150,15 +164,12 @@ class SimluatorEmpidemicSEIR:
         ax.set_xlim(0, self.iteration - 1)
         ax.set_ylim(0, len(self.graph.nodes))
         ax.set_xticks(range(0, self.iteration), range(1, self.iteration + 1))
+        ax.legend()
 
 
 if __name__ == '__main__':
     g = load()
     nodes_3 = [n for n in g.nodes if get_node_rank(g, n) == 3]
-    g.remove_nodes_from(nodes_3)
-    
-    closeness_centrality = nx.closeness_centrality(g)
-    start_node = max(closeness_centrality, key=closeness_centrality.get)
-
-    sim = SimluatorEmpidemicSEIR(g, 20, start_node, 'spread_all_epidemic_seir_0.25_1_2', 0.25, 1, 2)
+    g.remove_nodes_from(nodes_3)    
+    sim = SimluatorEmpidemicSEIR(g, 20, 'me', 'spread_all_epidemic_seir_0.15_1_3', 0.15, 1, 3)
     sim.run()

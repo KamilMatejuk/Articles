@@ -89,8 +89,8 @@ def graph_spread_with_each_node_removed(graph: nx.Graph):
 
 if __name__ == '__main__':
     g = load()
-    # nodes_3 = [n for n in g.nodes if get_node_rank(g, n) == 3]
-    # g.remove_nodes_from(nodes_3)
+    nodes_3 = [n for n in g.nodes if get_node_rank(g, n) == 3]
+    g.remove_nodes_from(nodes_3)
     
-    graph_spread_from_each_node(g)
+    # graph_spread_from_each_node(g)
     # graph_spread_with_each_node_removed(g)
