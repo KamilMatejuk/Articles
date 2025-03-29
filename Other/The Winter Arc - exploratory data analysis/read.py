@@ -42,6 +42,4 @@ def read_passfail() -> pd.DataFrame:
     kcal = const.COLS_EATING[-1]
     passfail[kcal] = data[kcal].map(lambda x: x >= 2900)
     
-    # TODO weekly - alcohol, gym, medium, linkedin    
-    
     return passfail    
