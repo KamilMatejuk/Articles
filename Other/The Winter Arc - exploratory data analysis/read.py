@@ -16,6 +16,7 @@ def read_data() -> pd.DataFrame:
 def read_passfail() -> pd.DataFrame:
     data = read_data()
     passfail = pd.DataFrame()
+    passfail['date'] = data['date']
     # sleep
     sleep_night, sleep_day, sleep_total = const.COLS_SLEEPING
     passfail[sleep_night] = data[sleep_night].map(lambda x: x >= 7 * 60)
