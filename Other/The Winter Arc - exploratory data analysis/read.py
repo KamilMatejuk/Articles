@@ -1,6 +1,8 @@
 import const
-import pandas as pd
 import datetime
+import numpy as np
+import pandas as pd
+
 
 def read_data() -> pd.DataFrame:
     data = pd.read_csv('data.csv')
@@ -8,8 +10,13 @@ def read_data() -> pd.DataFrame:
     # calculate sums
     for (*cols, total) in [const.COLS_SLEEPING, const.COLS_READING, const.COLS_EXERCISE]:
         data[total] = sum(data[c] for c in cols)
+    # shoulder raises
     series, reps, weight, volume = const.COLS_SHOULDER_RAISES
     data[volume] = data[series] * data[reps] * data[weight]
+    # energy
+    energy = const.COLS_OTHER[4]
+    valuemap = { 'low': 1, 'neutral': 2, 'high': 3, np.nan: 0 }
+    data[energy] = data[energy].map(valuemap)
     return data
 
 
