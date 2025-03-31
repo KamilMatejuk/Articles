@@ -65,3 +65,30 @@ def create_graph_passrate(values_df: pd.DataFrame, passfail_df: pd.DataFrame, co
         else: print(label)
     fig.tight_layout()
     plt.show()
+
+
+def plot_data(values, index):
+    fig, ax = plt.subplots(figsize=(10, 2.5))
+    ax.plot(index, values, color=C_DEFAULT)
+    set_style(ax, index)
+    set_style_xticks(ax, index)
+    fig.tight_layout()
+    plt.show()
+
+
+def create_graph_frequencies(values, index, tick_limit, bar_width, ylabel):
+    top = sorted(zip(index, values), key=lambda x: x[1], reverse=True)
+    top = list(filter(lambda x: x[1] > tick_limit, top))
+    fig, ax = plt.subplots(figsize=(10, 2))
+    ax.bar(index, values, width=index * bar_width, color=C_DEFAULT)
+    ax.set_xscale('log')
+    ax.set_xlabel('Frequency [days]')
+    ax.set_ylabel(ylabel)
+    ax.xaxis.set_major_formatter('{x:.1f}')
+    set_style(ax, index)
+    current_xticks = [xt for xt in plt.xticks()[0] if xt > min(index) and xt < max(index)]
+    add_xticks = [t[0] for t in top] + [min(index), max(index)]
+    new_ticks = np.append(current_xticks, add_xticks)
+    ax.set_xticks(new_ticks)
+    fig.tight_layout()
+    plt.show()
