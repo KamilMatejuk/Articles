@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 C_PASS = '#1fdd55'
 C_FAIL = '#f6894c'
-C_DEFAULT = 'lightblue'
+C_DEFAULT = '#659bdf'
 C_SCALE = ['#c97d7d', '#d6b47d', '#7daf7d']
 C_MACROS = ['blue', 'red', 'orange', 'black']
 
@@ -67,8 +67,18 @@ def create_graph_passrate(values_df: pd.DataFrame, passfail_df: pd.DataFrame, co
     plt.show()
 
 
-def plot_data(values, index):
+def plot_data(values: pd.Series, index: pd.Series):
     fig, ax = plt.subplots(figsize=(10, 2.5))
+    ax.plot(index, values, color=C_DEFAULT)
+    set_style(ax, index)
+    set_style_xticks(ax, index)
+    fig.tight_layout()
+    plt.show()
+
+
+def plot_data_with_shadow(values: pd.Series, shadow: pd.Series, index: pd.Series):
+    fig, ax = plt.subplots(figsize=(10, 2.5))
+    ax.plot(index, shadow, color='black', alpha=0.5, linestyle=':')
     ax.plot(index, values, color=C_DEFAULT)
     set_style(ax, index)
     set_style_xticks(ax, index)
