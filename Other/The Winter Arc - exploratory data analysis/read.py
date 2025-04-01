@@ -17,6 +17,9 @@ def read_data() -> pd.DataFrame:
     energy = const.COLS_OTHER[4]
     valuemap = { 'low': 1, 'neutral': 2, 'high': 3, np.nan: 0 }
     data[energy] = data[energy].map(valuemap)
+    # kcal 7 day moving average
+    kcal, kcal_sma = const.COLS_EATING[-2:]
+    data[kcal_sma] = data[kcal].replace(0, data[kcal].max() * 0.75).rolling(window=7, min_periods=5).mean().fillna(0)
     return data
 
 
@@ -47,7 +50,11 @@ def read_passfail() -> pd.DataFrame:
     volume = const.COLS_SHOULDER_RAISES[-1]
     passfail[volume] = data[volume].map(lambda x: x > 0)
     # eat
-    kcal = const.COLS_EATING[-1]
-    passfail[kcal] = data[kcal].map(lambda x: x >= 2900)
+    kcal, kcal_sma = const.COLS_EATING[-2:]
+    kcal_expected = data['date'].map(lambda x: 2500 if x > datetime.datetime(2025, 3, 1) else 2900)
+    kcal_limit_min = kcal_expected - 200
+    kcal_limit_max = kcal_expected + 200
+    passfail[kcal] = (kcal_limit_min < data[kcal]) & (data[kcal] < kcal_limit_max)
+    passfail[kcal_sma] = (kcal_limit_min < data[kcal_sma]) & (data[kcal_sma] < kcal_limit_max)
     
     return passfail    

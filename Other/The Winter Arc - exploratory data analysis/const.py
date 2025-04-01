@@ -6,6 +6,6 @@ COLS_EXERCISE = ['exercise_volleyball_time', 'exercise_gym_time', 'exercise_home
                  'exercise_swim_time', 'exercise_run_time', 'exercise_dance_time', 'exercise_total_time']
 COLS_SHOULDER_RAISES = ['exercise_shoulder_raises_series', 'exercise_shoulder_raises_avg_reps_per_serie', \
                         'exercise_shoulder_raises_avg_weight_per_serie', 'exercise_shoulder_raises_volume']
-COLS_EATING = ['macros_protein', 'macros_carbs', 'macros_fat', 'macros_alcohol', 'macros_kcal']
+COLS_EATING = ['macros_protein', 'macros_carbs', 'macros_fat', 'macros_alcohol', 'macros_kcal', 'macros_kcal_7sma']
 COLS_PUBLISHING = ['published_medium', 'published_linkedin']
 COLS_OTHER = ['date', 'week_day', 'working', 'out_of_home', 'energy']
