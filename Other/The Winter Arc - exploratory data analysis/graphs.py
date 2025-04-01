@@ -14,13 +14,15 @@ C_MACROS = ['blue', 'red', 'orange', 'black']
 def set_style(ax: plt.Axes, index: pd.Series):
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
-    ax.set_xlim(index.min(), index.max())
+    try: new_max = index.max() + datetime.timedelta(1)
+    except TypeError: new_max = index.max() + 1
+    ax.set_xlim(index.min(), new_max)
 
 
 def set_style_xticks(ax: plt.Axes, index: pd.Series):
-    xticks = index[::7]
+    xticks = list(index[::7]) + list(index[-1:])
     ax.set_xticks(xticks)
-    ax.set_xticklabels(xticks.map(lambda x: x.strftime('%d.%m.%Y')), rotation=45, ha='right')
+    ax.set_xticklabels([x.strftime('%d.%m.%Y') for x in xticks], rotation=45, ha='right')
 
 
 def show_passrate(ax: plt.Axes, values: pd.Series, passfail: pd.Series | None, index: pd.Series, time_format: bool):
@@ -44,7 +46,7 @@ def show_passrate(ax: plt.Axes, values: pd.Series, passfail: pd.Series | None, i
     if passfail is not None:
         y1 = values.max() * 0.55
         y2 = values.max() * 0.20
-        x = index.max() + datetime.timedelta(days=7)
+        x = index.max() + datetime.timedelta(days=10)
         pf = passfail.mean()
         avg = values.replace(0, np.nan).mean()
         if time_format:
