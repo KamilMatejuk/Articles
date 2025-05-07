@@ -7,10 +7,10 @@ from sklearn.exceptions import UndefinedMetricWarning
 warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
 
 
-def knn(df: pd.DataFrame, kfold_cls=KFold, kf_kwargs=None, knn_kwargs=None):
+def knn(df: pd.DataFrame, kfold_cls=None, kf_kwargs=None, knn_kwargs=None):
     X = df.copy().drop('class', axis=1)
     y = df.copy()['class']
-    kf = kfold_cls(**(kf_kwargs or {}))
+    kf = (kfold_cls or KFold)(**(kf_kwargs or {}))
     knn = KNeighborsClassifier(**(knn_kwargs or {}))
     accuracy = cross_val_score(knn, X, y, cv=kf, scoring='accuracy').mean()
     f1 = cross_val_score(knn, X, y, cv=kf, scoring='f1_macro').mean()
