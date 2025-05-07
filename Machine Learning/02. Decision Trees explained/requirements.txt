@@ -1,0 +1,9 @@
+pandas
+scikit-learn
+ipykernel
+tqdm
+requests
+matplotlib
+seaborn
+ipywidgets
+jupyter
