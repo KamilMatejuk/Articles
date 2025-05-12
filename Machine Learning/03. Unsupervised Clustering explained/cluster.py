@@ -3,7 +3,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans, DBSCAN
-from sklearn.model_selection import cross_validate, StratifiedKFold
+from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import silhouette_score, davies_bouldin_score, adjusted_rand_score, confusion_matrix
 
 import warnings
@@ -47,20 +47,5 @@ def run(df: pd.DataFrame, kwargs: dict, classifier: KMeans | DBSCAN):
     ]], columns=['silhouette', 'davies_bouldin', 'rand', 'purity', 'clusters'])
 
 
-def test(df: pd.DataFrame, keyword: str, values: list, other_kwargs: dict, classifier: KMeans | DBSCAN):
-    combined = pd.DataFrame()
-    for v in values:
-        res, _ = run(df, { keyword: v, **other_kwargs }, classifier)
-        res[keyword] = v
-        combined = pd.concat([combined, res])
-    combined.index = combined[keyword]
-    combined.drop(columns=[keyword], inplace=True)
-    plt.figure(figsize=(6, len(values)))
-    sns.heatmap(combined, cmap="RdYlGn", vmin=0, vmax=1, annot=True, fmt=".0%")
-    plt.show()
-
-
 def run_kmeans(df: pd.DataFrame, kwargs: dict): return run(df, kwargs, KMeans)
 def run_dbscan(df: pd.DataFrame, kwargs: dict): return run(df, kwargs, DBSCAN)
-def test_kmeans(df: pd.DataFrame, keyword: str, values: list, other_kwargs: dict): return test(df, keyword, values, other_kwargs, KMeans)
-def test_dbscan(df: pd.DataFrame, keyword: str, values: list, other_kwargs: dict): return test(df, keyword, values, other_kwargs, DBSCAN)
