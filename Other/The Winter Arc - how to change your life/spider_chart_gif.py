@@ -37,7 +37,6 @@ class Parser:
         linkedin_post = self._calc_linkedin_post()
         self._remove_honeymoon()
         results = {
-            'Side\nProjects': self._calc_projects(), # time - passrate
             'Reading': self._calc_read(), # time - passrate
             'Phone': self._calc_phone(), # time - avg
             'No Naps': self._calc_nap(), # health - passrate
@@ -53,6 +52,7 @@ class Parser:
             'Medium\nArticle': self._calc_medium(), # social - number
             'LinkedIn\nPost': linkedin_post, # social - number
             'LinkedIn\nComment': self._calc_linkedin_comment(), # social - number
+            'Side\nProjects': self._calc_projects(), # time - passrate
         }
         categories = [k if v is not None else '' for k, (v, _) in results.items()]
         points = [v for v, _ in results.values()]
@@ -68,7 +68,7 @@ class Parser:
     def _calc_nap(self):
         # no naps during the day
         value = self.df['nap'].sum()
-        return 1 - (value / len(self.df)), f'missed\n{value} days'
+        return 1 - (value / len(self.df)), f'missed\n{int(value)} days'
 
     def _calc_projects(self):
         # side projects every day
@@ -115,7 +115,7 @@ class Parser:
     def _calc_alcohol(self):
         # no alcohol
         value = self.df['alcohol'].sum()
-        return 1 - (value / len(self.df)), f'missed\n{value} days'
+        return 1 - (value / len(self.df)), f'missed\n{int(value)} days'
 
     def _calc_kcal(self):
         month = self.df.reset_index().at[0, 'date'].month
@@ -150,7 +150,7 @@ class Parser:
         if len(df) == 0: return None, ''
         value = df['linkedin_post'].sum()
         # scale 0 - 15
-        return self._scale(value, 0, 15), f'{value} posts' if value != 1 else '1 post'
+        return self._scale(value, 0, 15), f'{int(value)} posts' if value != 1 else '1 post'
 
     def _calc_linkedin_comment(self):
         # number of comments
@@ -158,13 +158,13 @@ class Parser:
         if len(df) == 0: return None, ''
         value = df['linkedin_comment'].sum()
         # scale 0 - 20
-        return self._scale(value, 0, 20), f'{value} comments' if value != 1 else '1 comment'
+        return self._scale(value, 0, 20), f'{int(value)} comments' if value != 1 else '1 comment'
 
     def _calc_medium(self):
         # number of articles
         value = self.df['medium'].sum()
         # scale 0 - 2
-        return self._scale(value, 0, 2), f'{value} articles' if value != 1 else '1 article'
+        return self._scale(value, 0, 2), f'{int(value)} articles' if value != 1 else '1 article'
 
 ################################## animator ###################################
 
@@ -177,9 +177,9 @@ class Animator(FuncAnimation):
         self.angles = np.linspace(0, 2 * np.pi, max(len(categories) for _, categories, _, _ in data), endpoint=False).tolist()
         self.angles += self.angles[:1]
         self.fig = plt.figure(figsize=(10, 10))
-        gs = gridspec.GridSpec(15, 1, figure=self.fig)
-        self.ax1 = self.fig.add_subplot(gs[:14, 0], polar=True)  # top 90%
-        self.ax2 = self.fig.add_subplot(gs[14:, 0])              # bottom 10%
+        gs = gridspec.GridSpec(10, 1, figure=self.fig)
+        self.ax1 = self.fig.add_subplot(gs[:9, 0], polar=True)  # top 90%
+        self.ax2 = self.fig.add_subplot(gs[9:, 0])              # bottom 10%
         self.frames_per_month = int(seconds_per_month * fps)
         self.frames_per_transition = int(seconds_per_transition * fps)
         # forth all months and back without first and last month
