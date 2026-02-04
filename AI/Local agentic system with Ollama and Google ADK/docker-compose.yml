@@ -1,0 +1,34 @@
+services:
+  ollama:
+    build:
+      context: ollama
+      args:
+        PORT_OLLAMA: "${PORT_OLLAMA}"
+        MODEL_OLLAMA: "${MODEL_OLLAMA}"
+    ports:
+      - "${PORT_OLLAMA}:${PORT_OLLAMA}"
+    environment:
+      - PORT_OLLAMA=${PORT_OLLAMA}
+      - MODEL_OLLAMA=${MODEL_OLLAMA}
+    gpus: all
+    volumes:
+      - ollama:/usr/share/ollama/.ollama
+
+  adk:
+    build:
+      context: adk
+      args:
+        PORT_ADK: "${PORT_ADK}"
+    ports:
+      - "${PORT_ADK}:${PORT_ADK}"
+    environment:
+      - PORT_ADK=${PORT_ADK}
+      - PORT_OLLAMA=${PORT_OLLAMA}
+      - MODEL_OLLAMA=${MODEL_OLLAMA}
+    volumes:
+      - ./adk/sessions.db:/app/sessions.db
+    depends_on:
+      - ollama
+
+volumes:
+  ollama:
