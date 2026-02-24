@@ -1,0 +1,24 @@
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.10.0
+    working_dir: /app
+    volumes:
+      - ./mlruns:/app/mlruns
+      - ./mlartifacts:/app/mlartifacts
+    command: mlflow ui --host 0.0.0.0 --port 5000
+    ports:
+      - "5000:5000"
+
+  main:
+    build: .
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ${HOME}/.cache:/app/cache
+    command: bash -c '$CMD'
+    environment:
+      - GIT_PYTHON_REFRESH=quiet # remove warning about git repository from MLFlow
+      - MPLCONFIGDIR=/tmp/matplotlib # avoid permission issues with matplotlib
+      - GENSIM_DATA_DIR=/app/cache/gensim # save large models (e.g. word2vec)
+    depends_on:
+      - mlflow
