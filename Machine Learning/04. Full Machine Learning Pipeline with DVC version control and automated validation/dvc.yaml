@@ -1,0 +1,83 @@
+stages:
+  preprocess:
+    foreach: ['sephora', 'rotten_tomatoes']
+    do:
+      cmd: python scripts/1_preprocess.py ${item}
+      deps:
+        - scripts/1_preprocess.py
+        - data/in/product_info.csv
+        - data/in/reviews_0-250.csv
+        - data/in/reviews_1250-end.csv
+        - data/in/reviews_250-500.csv
+        - data/in/reviews_500-750.csv
+        - data/in/reviews_750-1250.csv
+        - data/in/rt-polarity.pos
+        - data/in/rt-polarity.neg
+      outs:
+        - data/out_1_preprocessed_${item}/data.csv
+
+  split:
+    foreach: ['sephora', 'rotten_tomatoes']
+    do:
+      cmd: python scripts/2_split.py ${item}
+      deps:
+        - scripts/2_split.py
+        - data/out_1_preprocessed_${item}/data.csv
+      params:
+        - dataset
+      outs:
+        - data/out_2_split_${item}/train.csv
+        - data/out_2_split_${item}/test.csv
+
+  eda:
+    foreach: ['sephora', 'rotten_tomatoes']
+    do:
+      cmd: MODEL=${item} jupyter nbconvert --to html --output ../data/eda_reports/report_${item}.html --no-input --execute scripts/Exploratory_data_analysis_EDA.ipynb
+      deps:
+        - scripts/Exploratory_data_analysis_EDA.ipynb
+        - data/out_1_preprocessed/data.csv
+        - data/in/stopwords.csv
+      outs:
+        - data/eda_reports/report_${item}.html:
+            cache: false
+
+  analyze:
+    foreach: ['sephora', 'rotten_tomatoes']
+    do:
+      cmd: python scripts/3_analyze.py ${item}
+      deps:
+        - scripts/3_analyze.py
+        - data/out_2_split_${item}/train.csv
+        - data/out_2_split_${item}/test.csv
+      outs:
+        - data/out_3_analyzed_${item}/train.csv
+        - data/out_3_analyzed_${item}/test.csv
+
+  train:
+    foreach: ['sephora', 'rotten_tomatoes']
+    do:
+      cmd: python scripts/4_train.py ${item}
+      deps:
+        - scripts/4_train.py
+        - scripts/utils.py
+        - data/out_3_analyzed_${item}/train.csv
+        - data/out_3_analyzed_${item}/test.csv
+      params:
+        - preprocessing
+        - training
+        - analysis
+        - model
+        - grid_search
+
+metrics:
+  - results_sephora/confusion_matrix_train.png
+  - results_sephora/confusion_matrix_test.png
+  - results_sephora/metrics.json
+  - results_sephora/shap.png
+  - results_rotten_tomatoes/confusion_matrix_train.png
+  - results_rotten_tomatoes/confusion_matrix_test.png
+  - results_rotten_tomatoes/metrics.json
+  - results_rotten_tomatoes/shap.png
+
+params:
+  - params.yaml
