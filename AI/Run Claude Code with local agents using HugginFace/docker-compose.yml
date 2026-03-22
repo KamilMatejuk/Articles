@@ -1,0 +1,46 @@
+services:
+
+  llama.cpp:
+    # check versions here: https://github.com/ggml-org/llama.cpp/pkgs/container/llama.cpp/versions
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda-b8461
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./models:/root/.cache/llama.cpp
+      - ./llama.sh:/entrypoint.sh
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    runtime: nvidia
+
+  litellm:
+    image: ghcr.io/berriai/litellm:v1.81.14-stable
+    restart: unless-stopped
+    ports:
+      - "44000:4000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgres://litellm:litellm@postgres:5432/litellm
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml:ro
+    command: 
+      - --config
+      - /app/config.yaml
+    depends_on:
+      - llama.cpp
+      - postgres
+    
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: litellm
+      POSTGRES_DB: litellm
+    volumes:
+      - litellm_pg:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  litellm_pg:
