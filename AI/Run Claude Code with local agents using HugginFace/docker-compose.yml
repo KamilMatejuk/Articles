@@ -2,12 +2,21 @@ services:
 
   llama.cpp:
     # check versions here: https://github.com/ggml-org/llama.cpp/pkgs/container/llama.cpp/versions
-    image: ghcr.io/ggml-org/llama.cpp:server-cuda-b8461
+    # image: ghcr.io/ggml-org/llama.cpp:server-cuda-b8461
+    build:
+      context: ./llama.cpp
+      dockerfile: .devops/cuda.Dockerfile
+      target: server
+      args:
+        UBUNTU_VERSION: "22.04"
+        CUDA_VERSION: "12.4.1"
+        CUDA_DOCKER_ARCH: "89"
+    image: local/llama.cpp:server-cuda
     restart: unless-stopped
     ports:
       - "11434:11434"
     volumes:
-      - ./models:/root/.cache/llama.cpp
+      - ./models:/root/.cache/huggingface/hub
       - ./llama.sh:/entrypoint.sh
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
     runtime: nvidia

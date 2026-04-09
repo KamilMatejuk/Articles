@@ -1,3 +1,6 @@
 [submodule "Other/The Winter Arc 2.0"]
 	path = Other/The Winter Arc 2.0
 	url = git@github.com:KamilMatejuk/Winter-Arc-2.0.git
+[submodule "AI/Run Claude Code with local agents using HugginFace/llama.cpp"]
+	path = AI/Run Claude Code with local agents using HugginFace/llama.cpp
+	url = git@github.com:ggml-org/llama.cpp.git
