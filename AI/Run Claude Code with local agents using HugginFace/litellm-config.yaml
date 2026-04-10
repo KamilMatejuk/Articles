@@ -1,13 +1,13 @@
 model_list:
-  - model_name: GPT-OSS
+  - model_name: Gemma4
     litellm_params:
-      model: anthropic/GPT-OSS-Q8
+      model: anthropic/Gemma4
       api_base: http://llama.cpp:11434
 
   # fallback for default Claude Code model
   - model_name: claude-haiku-4-5-20251001
     litellm_params:
-      model: anthropic/GPT-OSS-Q8
+      model: anthropic/Gemma4
       api_base: http://llama.cpp:11434
 
 general_settings:
