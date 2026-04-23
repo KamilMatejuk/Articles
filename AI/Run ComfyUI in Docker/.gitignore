@@ -1,0 +1,5 @@
+# mapped volumes with configuration
+models/
+output/
+# AI tools
+.claude

@@ -1,0 +1,22 @@
+services:
+  comfyui:
+    build:
+      context: .
+    image: comfyui:latest
+    volumes:
+      - ./models:/app/ComfyUI/models
+      - ./output:/app/ComfyUI/output
+    ports:
+      - "8188:8188"
+    runtime: nvidia
+    # NOTE: The SHMEM allocation limit is set to the default of 64MB.  This may be
+    # insufficient for PyTorch.  NVIDIA recommends the use of the following flags:
+    # docker run --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864
+    shm_size: 1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      stack:
+        soft: 67108864
+        hard: 67108864
